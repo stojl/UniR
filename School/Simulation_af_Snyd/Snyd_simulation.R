@@ -14,7 +14,7 @@ simulate_roll <- function(number_of_players, dice_vector, m){
   
   count_dice <- function(df, n){
     
-    trappevalue <- df %>% filter(dice_value %in% 1:n) %$% 
+    trappevalue <- df %>% head(n) %$% 
       prod(dice_value_count)
     
     et_count <- df$dice_value_count[1]
