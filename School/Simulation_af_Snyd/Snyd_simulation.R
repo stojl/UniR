@@ -34,11 +34,7 @@ simulate_roll <- function(number_of_players, dice_vector, m){
       ))
     }
   }
-  
-  result <- tibble(gameid = integer(), 
-                   dice_value = integer(), 
-                   total_dice = integer())
-  
+
   #Simulation
   
   future_map_dfr(1:m, ~ {
