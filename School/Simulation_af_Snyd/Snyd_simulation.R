@@ -1,5 +1,12 @@
-library(tidyverse)
+library(dplyr)
+library(tibble)
+library(purrr)
+library(tidyr)
 library(magrittr)
+library(furrr)
+
+#Setup for parallel processing
+plan(multisession, workers = availableCores())
 
 simulate_roll <- function(number_of_players, dice_vector, m){
   
@@ -34,8 +41,8 @@ simulate_roll <- function(number_of_players, dice_vector, m){
   
   #Simulation
   
-  for(i in 1:m){
-    result <- sample(1:6, total_dice, replace = TRUE) %>% 
+  future_map_dfr(1:m, ~ {
+    sample(1:6, total_dice, replace = TRUE) %>% 
       tibble(index = index_vec, dice_value = .) %>% 
       group_by(index, dice_value) %>% 
       summarise(dice_value_count = n()) %>% 
@@ -48,9 +55,7 @@ simulate_roll <- function(number_of_players, dice_vector, m){
       suppressMessages %>% 
       group_by(dice_value) %>% 
       summarise(total_dice = sum(dice_value_count)) %>%
-      mutate(gameid = i) %>% 
-      bind_rows(result, .)
-  }
+      mutate(gameid = .x)
+  }, .options = furrr_options(seed = NULL))
   
-  return(result)
 }
