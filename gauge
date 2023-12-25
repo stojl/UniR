@@ -1,0 +1,66 @@
+create_circle_slice <- function(theta, phi, r, n, label) {
+  seg_1 <- seq(r * cos(theta), r * cos(phi), length.out = n)
+  seg_1_y <- sqrt(r^2 - seg_1^2)
+  
+  seg_3 <- seq(cos(phi), cos(theta), length.out = n)
+  seg_3_y <- sqrt(1 - seg_3^2)
+  
+  
+  rbind(
+    data.frame(x = seg_1, y = seg_1_y, label = label),
+    data.frame(x = seg_3, y = seg_3_y, label = label)
+  )
+}
+
+rbind(
+  create_circle_slice(0, 30 * pi / 100, 0.57, 100, "red"),
+  create_circle_slice(30 * pi / 100, 70 * pi / 100, 0.57, 100, "blue"),
+  create_circle_slice(70 * pi / 100, pi, 0.57, 100, "green")
+) %>% 
+  ggplot(aes(x = x, y = y, fill = label)) +
+  geom_polygon() +
+  geom_text(
+    data = data.frame(x = 0, y = 0, label = "34"), 
+    aes(x = x, y = y, label = label), 
+    size = 16,
+    vjust = 0,
+    hjust = 0.5,
+    family = "arial",
+    inherit.aes = FALSE) +
+  geom_text(
+    data = data.frame(x = -1, y = 0, label = "0"), 
+    aes(x = x, y = y, label = label), 
+    size = 5,
+    vjust = 0.5,
+    hjust = 2,
+    family = "arial",
+    inherit.aes = FALSE) +
+  geom_text(
+    data = data.frame(x = 1, y = 0, label = "100"), 
+    aes(x = x, y = y, label = label), 
+    size = 5,
+    vjust = 0.5,
+    hjust = -0.4,
+    family = "arial",
+    inherit.aes = FALSE) +
+  geom_segment(
+    aes(
+      x = 0.5 * cos(pi / 4),
+      y = 0.5 * sin(pi / 4),
+      xend = 1.17 * cos(pi / 4),
+      yend = 1.17 * sin(pi / 4)
+    ), 
+    inherit.aes = FALSE,
+    linewidth = 1.5,
+    linejoin = "mitre",
+    arrow = grid::arrow(
+      type = "closed", 
+      length = ggplot2::unit(3, units = "pt")
+    )
+  ) +
+  theme_void() +
+  xlim(c(-1.1, 1.1)) +
+  ylim(c(0, 1)) +
+  coord_fixed(ratio = 1) +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = c("#fcb103", "#00546b", "#9e0000"))
